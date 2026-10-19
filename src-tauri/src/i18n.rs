@@ -65,6 +65,7 @@ pub fn t(key: &str) -> &'static str {
         "tray.gesture" => ("Shift while dragging opens the wheel", "Nhấn Shift khi kéo file để mở vòng"),
         "tray.delete" => ("Move originals to Recycle Bin after converting", "Chuyển file gốc vào Thùng rác sau khi đổi"),
         "tray.settings" => ("Settings…", "Cài đặt…"),
+        "tray.autostart" => ("Start with Windows", "Khởi động cùng Windows"),
         "tray.quit" => ("Quit KT Convert", "Thoát KT Convert"),
         "settings.title" => ("KT Convert Settings", "Cài đặt KT Convert"),
 

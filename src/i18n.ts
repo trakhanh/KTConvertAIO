@@ -35,6 +35,11 @@ const STRINGS = {
   ],
   "set.gesture": ["Shift while dragging a file opens the wheel", "Nhấn Shift khi đang kéo file để mở vòng tròn"],
   "set.gestureHint": ["Drop the file on a format to convert it.", "Thả file vào một định dạng để chuyển đổi."],
+  "set.autostart": ["Start with Windows", "Khởi động cùng Windows"],
+  "set.autostartHint": [
+    "Runs quietly in the tray after you sign in, so the shortcut always works.",
+    "Chạy im lặng ở khay hệ thống sau khi đăng nhập, để phím tắt luôn dùng được.",
+  ],
   "set.hotkey": ["Open the wheel for selected files", "Mở vòng tròn cho file đang chọn"],
   "set.hotkeyHint": [
     "Select files in File Explorer or on the desktop, then press the shortcut.",

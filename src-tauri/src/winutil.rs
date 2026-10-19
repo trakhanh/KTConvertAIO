@@ -179,6 +179,38 @@ pub fn recycle(path: &std::path::Path) -> Result<(), String> {
     }
 }
 
+/// Value name under HKCU\...\Run; the uninstaller removes the same name (windows/hooks.nsh).
+const RUN_VALUE: windows::core::PCWSTR = windows::core::w!("KT Convert");
+const RUN_KEY: windows::core::PCWSTR = windows::core::w!("Software\\Microsoft\\Windows\\CurrentVersion\\Run");
+
+/// Registers (or removes) this exe to start with Windows for the current user, with `--autostart`.
+pub fn set_autostart(enabled: bool) -> Result<(), String> {
+    use windows::Win32::Foundation::ERROR_FILE_NOT_FOUND;
+    use windows::Win32::System::Registry::{
+        RegCloseKey, RegDeleteValueW, RegOpenKeyExW, RegSetValueExW, HKEY, HKEY_CURRENT_USER, KEY_SET_VALUE, REG_SZ,
+    };
+
+    unsafe {
+        let mut key = HKEY::default();
+        RegOpenKeyExW(HKEY_CURRENT_USER, RUN_KEY, None, KEY_SET_VALUE, &mut key)
+            .ok()
+            .map_err(|e| e.to_string())?;
+        let result = if enabled {
+            let exe = std::env::current_exe().map_err(|e| e.to_string())?;
+            let command = format!("\"{}\" --autostart", exe.display());
+            let bytes: Vec<u8> = command.encode_utf16().chain(Some(0)).flat_map(u16::to_le_bytes).collect();
+            RegSetValueExW(key, RUN_VALUE, None, REG_SZ, Some(&bytes)).ok().map_err(|e| e.to_string())
+        } else {
+            match RegDeleteValueW(key, RUN_VALUE) {
+                e if e == ERROR_FILE_NOT_FOUND => Ok(()),
+                e => e.ok().map_err(|e| e.to_string()),
+            }
+        };
+        let _ = RegCloseKey(key);
+        result
+    }
+}
+
 /// Work area (screen minus taskbar) of the monitor containing the point, in physical pixels.
 pub fn work_area_at(x: i32, y: i32) -> RECT {
     unsafe {

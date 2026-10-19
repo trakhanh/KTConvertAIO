@@ -10,6 +10,7 @@ type SettingsModel = {
   categories: CategoryModel[];
   deleteOriginal: boolean;
   gestureEnabled: boolean;
+  autostart: boolean;
   maxOnWheel: number;
   hotkey: string;
   language: string;
@@ -35,6 +36,7 @@ let savedTimer: number | undefined;
 const demoModel: SettingsModel = {
   deleteOriginal: false,
   gestureEnabled: true,
+  autostart: true,
   maxOnWheel: 8,
   hotkey: "Ctrl+Alt+C",
   language: "auto",
@@ -171,6 +173,7 @@ function render() {
   ($("language") as HTMLSelectElement).value = model.language;
   ($("delete-original") as HTMLInputElement).checked = model.deleteOriginal;
   ($("gesture") as HTMLInputElement).checked = model.gestureEnabled;
+  ($("autostart") as HTMLInputElement).checked = model.autostart;
   $("hotkey").textContent = model.hotkey;
   document.documentElement.dataset.cat = current;
   renderTabs();
@@ -232,6 +235,11 @@ $("reset").addEventListener("click", () => saveSelection([]));
 
 $("delete-original").addEventListener("change", async (e) => {
   model!.deleteOriginal = await call<boolean>("set_delete_original", { value: (e.target as HTMLInputElement).checked });
+  flashSaved();
+});
+
+$("autostart").addEventListener("change", async (e) => {
+  model!.autostart = await call<boolean>("set_autostart", { value: (e.target as HTMLInputElement).checked });
   flashSaved();
 });
 

@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/trakhanh/KTConvertAIO/releases/latest/download/KTConvert-0.1.0-Setup.exe"><b>⬇ Tải bộ cài cho Windows (57 MB)</b></a>
+  <a href="https://github.com/trakhanh/KTConvertAIO/releases/latest/download/KTConvert-0.1.1-Setup.exe"><b>⬇ Tải bộ cài cho Windows (57 MB)</b></a>
   &nbsp;·&nbsp;
   <a href="https://github.com/trakhanh/KTConvertAIO/releases">Các phiên bản</a>
 </p>
@@ -23,10 +23,10 @@ KT Convert chạy nền ở khay hệ thống. Khi cần đổi định dạng, 
 
 ## Tải và cài đặt
 
-1. Tải [**KTConvert-0.1.0-Setup.exe**](https://github.com/trakhanh/KTConvertAIO/releases/latest/download/KTConvert-0.1.0-Setup.exe).
+1. Tải [**KTConvert-0.1.1-Setup.exe**](https://github.com/trakhanh/KTConvertAIO/releases/latest/download/KTConvert-0.1.1-Setup.exe).
 2. Mở file vừa tải. Nếu Windows hiện cảnh báo **"Windows protected your PC"** (do app chưa có chữ ký số), bấm **More info → Run anyway**.
 3. Chọn ngôn ngữ, bấm cài. Bộ cài chỉ cài cho tài khoản của bạn, **không cần quyền admin**, và đã kèm sẵn FFmpeg — không phải cài thêm gì.
-4. Sau khi cài, biểu tượng KT Convert nằm ở khay hệ thống (góc phải dưới, có thể ẩn trong mũi tên **^**).
+4. Sau khi cài, biểu tượng KT Convert nằm ở khay hệ thống (góc phải dưới, có thể ẩn trong mũi tên **^**). App **tự khởi động cùng Windows** và chạy im lặng ở khay, nên phím tắt luôn dùng được ngay sau khi bật máy (tắt trong Cài đặt nếu không muốn).
 
 **Yêu cầu:** Windows 10 hoặc 11, 64-bit.
 
@@ -48,6 +48,7 @@ Chuột phải (hoặc bấm) biểu tượng ở khay → **Cài đặt…**:
 
 - **Ngôn ngữ:** Theo Windows / Tiếng Việt / English.
 - **Định dạng trên vòng tròn:** với mỗi loại file (Ảnh, GIF, Video, Âm thanh), chọn tối đa 8 định dạng hay dùng và kéo để sắp xếp thứ tự.
+- **Khởi động cùng Windows** (mặc định bật).
 - Bật/tắt chuyển file gốc vào Thùng rác, và cử chỉ Shift khi kéo file.
 
 ## Định dạng hỗ trợ

@@ -18,6 +18,8 @@ pub struct Settings {
     pub wheel_formats: HashMap<String, Vec<String>>,
     /// "vi", "en", or "auto" to follow the Windows display language.
     pub language: String,
+    /// Start KT Convert when the user signs in to Windows.
+    pub autostart: bool,
 }
 
 impl Default for Settings {
@@ -27,6 +29,7 @@ impl Default for Settings {
             gesture_enabled: true,
             wheel_formats: HashMap::new(),
             language: "auto".into(),
+            autostart: true,
         }
     }
 }

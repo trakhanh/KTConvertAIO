@@ -52,6 +52,7 @@ struct TrayChecks {
     convert: MenuItem<tauri::Wry>,
     gesture: CheckMenuItem<tauri::Wry>,
     delete_original: CheckMenuItem<tauri::Wry>,
+    autostart: CheckMenuItem<tauri::Wry>,
     settings: MenuItem<tauri::Wry>,
     quit: MenuItem<tauri::Wry>,
 }
@@ -61,6 +62,7 @@ impl TrayChecks {
         let _ = self.convert.set_text(format!("{}\t{HOTKEY_LABEL}", t("tray.convert")));
         let _ = self.gesture.set_text(t("tray.gesture"));
         let _ = self.delete_original.set_text(t("tray.delete"));
+        let _ = self.autostart.set_text(t("tray.autostart"));
         let _ = self.settings.set_text(t("tray.settings"));
         let _ = self.quit.set_text(t("tray.quit"));
     }
@@ -210,6 +212,32 @@ fn apply_gesture(app: &AppHandle, value: bool) {
     }
 }
 
+/// Writes (or removes) the "start with Windows" entry. Dev builds never register themselves,
+/// so a debug exe in target\ cannot end up in the user's startup list.
+fn sync_autostart(enabled: bool) {
+    if cfg!(debug_assertions) {
+        return;
+    }
+    if let Err(e) = winutil::set_autostart(enabled) {
+        eprintln!("[autostart] {e}");
+    }
+}
+
+/// Saves the start-with-Windows switch, applies it and mirrors it in the tray menu.
+fn apply_autostart(app: &AppHandle, value: bool) {
+    app.state::<SettingsState>().update(app, |s| s.autostart = value);
+    sync_autostart(value);
+    if let Some(items) = app.try_state::<TrayChecks>() {
+        let _ = items.autostart.set_checked(value);
+    }
+}
+
+#[tauri::command]
+fn set_autostart(app: AppHandle, value: bool) -> bool {
+    apply_autostart(&app, value);
+    value
+}
+
 #[tauri::command]
 fn set_delete_original(app: AppHandle, value: bool) -> bool {
     apply_delete_original(&app, value);
@@ -237,6 +265,7 @@ struct SettingsModel {
     categories: Vec<CategoryModel>,
     delete_original: bool,
     gesture_enabled: bool,
+    autostart: bool,
     max_on_wheel: usize,
     hotkey: &'static str,
     /// The saved preference: "auto", "vi" or "en".
@@ -288,6 +317,7 @@ fn get_settings(app: AppHandle) -> SettingsModel {
             .collect(),
         delete_original: s.delete_original,
         gesture_enabled: s.gesture_enabled,
+        autostart: s.autostart,
         max_on_wheel: formats::MAX_ON_WHEEL,
         hotkey: HOTKEY_LABEL,
         language: s.language.clone(),
@@ -361,6 +391,7 @@ fn setup_tray(app: &tauri::App) -> tauri::Result<()> {
         CheckMenuItem::with_id(app, "gesture", t("tray.gesture"), true, s.gesture_enabled, None::<&str>)?;
     let delete_item =
         CheckMenuItem::with_id(app, "delete-original", t("tray.delete"), true, s.delete_original, None::<&str>)?;
+    let autostart_item = CheckMenuItem::with_id(app, "autostart", t("tray.autostart"), true, s.autostart, None::<&str>)?;
     let settings_item = MenuItem::with_id(app, "settings", t("tray.settings"), true, None::<&str>)?;
     let quit_item = MenuItem::with_id(app, "quit", t("tray.quit"), true, None::<&str>)?;
     let menu = Menu::with_items(
@@ -370,6 +401,7 @@ fn setup_tray(app: &tauri::App) -> tauri::Result<()> {
             &PredefinedMenuItem::separator(app)?,
             &gesture_item,
             &delete_item,
+            &autostart_item,
             &settings_item,
             &PredefinedMenuItem::separator(app)?,
             &quit_item,
@@ -379,6 +411,7 @@ fn setup_tray(app: &tauri::App) -> tauri::Result<()> {
         convert: convert_item,
         gesture: gesture_item,
         delete_original: delete_item,
+        autostart: autostart_item,
         settings: settings_item,
         quit: quit_item,
     });
@@ -395,6 +428,7 @@ fn setup_tray(app: &tauri::App) -> tauri::Result<()> {
                 "convert" => convert_selection_of(app, dragwatch::last_explorer()),
                 "gesture" => apply_gesture(app, checks.gesture.is_checked().unwrap_or(true)),
                 "delete-original" => apply_delete_original(app, checks.delete_original.is_checked().unwrap_or(false)),
+                "autostart" => apply_autostart(app, checks.autostart.is_checked().unwrap_or(true)),
                 "settings" => open_settings(app),
                 "quit" => app.exit(0),
                 _ => {}
@@ -428,6 +462,7 @@ pub fn run() {
             hide_toast,
             reveal_in_explorer,
             open_homepage,
+            set_autostart,
             set_delete_original,
             set_gesture,
             get_settings,
@@ -449,6 +484,8 @@ pub fn run() {
             let saved = settings.get();
             dragwatch::ENABLED.store(saved.gesture_enabled, Ordering::Relaxed);
             i18n::set(i18n::resolve(&saved.language));
+            // Re-register on every launch so the entry follows the exe if it was moved or updated.
+            sync_autostart(saved.autostart);
             app.manage(settings);
             if let Some(win) = app.get_webview_window("settings") {
                 let _ = win.set_title(t("settings.title"));
@@ -465,15 +502,19 @@ pub fn run() {
             }
             dragwatch::spawn(app.handle().clone());
 
-            let handle = app.handle().clone();
-            std::thread::spawn(move || {
-                // Give the toast page a moment to load before greeting.
-                std::thread::sleep(std::time::Duration::from_millis(1200));
-                toast::show(
-                    &handle,
-                    ToastPayload::info(t("ready.title"), &tf("ready.detail", &[("hotkey", HOTKEY_LABEL)])),
-                );
-            });
+            // Started by Windows at sign-in: stay quietly in the tray. Opened by the user: greet.
+            let started_by_windows = std::env::args().any(|a| a == "--autostart");
+            if !started_by_windows {
+                let handle = app.handle().clone();
+                std::thread::spawn(move || {
+                    // Give the toast page a moment to load before greeting.
+                    std::thread::sleep(std::time::Duration::from_millis(1200));
+                    toast::show(
+                        &handle,
+                        ToastPayload::info(t("ready.title"), &tf("ready.detail", &[("hotkey", HOTKEY_LABEL)])),
+                    );
+                });
+            }
             Ok(())
         })
         .on_window_event(|window, event| {
