@@ -1,0 +1,3 @@
+# Keep most of the CPU free while compiling so the machine stays responsive.
+[build]
+jobs = 4

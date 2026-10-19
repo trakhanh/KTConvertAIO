@@ -1,0 +1,93 @@
+{
+  "$schema": "https://schema.tauri.app/config/2",
+  "productName": "KT Convert",
+  "version": "0.1.0",
+  "identifier": "com.ktconvert.app",
+  "build": {
+    "beforeDevCommand": "npm run dev",
+    "devUrl": "http://localhost:1420",
+    "beforeBuildCommand": "npm run build",
+    "frontendDist": "../dist"
+  },
+  "app": {
+    "windows": [
+      {
+        "label": "wheel",
+        "title": "KT Convert",
+        "url": "wheel.html",
+        "width": 330,
+        "height": 330,
+        "transparent": true,
+        "decorations": false,
+        "shadow": false,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
+        "resizable": false,
+        "visible": false,
+        "focus": false,
+        "dragDropEnabled": true
+      },
+      {
+        "label": "toast",
+        "title": "KT Convert",
+        "url": "toast.html",
+        "width": 400,
+        "height": 120,
+        "transparent": true,
+        "decorations": false,
+        "shadow": false,
+        "alwaysOnTop": true,
+        "skipTaskbar": true,
+        "resizable": false,
+        "visible": false,
+        "focus": false,
+        "dragDropEnabled": false
+      },
+      {
+        "label": "settings",
+        "title": "KT Convert Settings",
+        "url": "settings.html",
+        "width": 820,
+        "height": 640,
+        "minWidth": 640,
+        "minHeight": 520,
+        "center": true,
+        "visible": false,
+        "dragDropEnabled": false
+      }
+    ],
+    "security": {
+      "csp": null
+    }
+  },
+  "bundle": {
+    "active": true,
+    "targets": ["nsis"],
+    "publisher": "Khánh Trà",
+    "homepage": "https://github.com/trakhanh/KTConvertAIO",
+    "shortDescription": "Zero-click file converter",
+    "longDescription": "Convert images, GIFs, video and audio from File Explorer with one shortcut or a Shift-drag.",
+    "copyright": "© 2026 Khánh Trà. Bundles FFmpeg (GPL v3).",
+    "category": "Utility",
+    "icon": [
+      "icons/32x32.png",
+      "icons/128x128.png",
+      "icons/128x128@2x.png",
+      "icons/icon.ico"
+    ],
+    "resources": {
+      "ffmpeg/ffmpeg.exe": "bin/ffmpeg.exe",
+      "ffmpeg/FFMPEG-LICENSE.txt": "bin/FFMPEG-LICENSE.txt",
+      "ffmpeg/FFMPEG-README.txt": "bin/FFMPEG-README.txt"
+    },
+    "windows": {
+      "nsis": {
+        "installMode": "currentUser",
+        "languages": ["Vietnamese", "English"],
+        "displayLanguageSelector": true,
+        "installerIcon": "icons/icon.ico",
+        "compression": "lzma"
+      }
+    }
+  }
+}

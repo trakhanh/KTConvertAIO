@@ -1,0 +1,1 @@
+﻿KT Convert bundles FFmpeg (https://ffmpeg.org), ffmpeg version 8.1.1-full_build-www.gyan.dev Copyright (c) 2000-2026 the FFmpeg developers, from the Gyan.dev full build (https://www.gyan.dev/ffmpeg/builds/). FFmpeg is licensed under the GNU GPL v3; see FFMPEG-LICENSE.txt. Source code: https://ffmpeg.org/download.html

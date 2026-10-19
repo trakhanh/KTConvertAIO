@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="vi">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>KT Convert</title>
+    <link rel="stylesheet" href="/src/settings.css" />
+  </head>
+  <body>
+    <header class="top">
+      <div class="brand">
+        <img class="logo" src="/app-icon.png" alt="" />
+        <div>
+          <h1>KT Convert</h1>
+          <p data-i18n="set.title"></p>
+        </div>
+      </div>
+      <div class="saved" id="saved" role="status" aria-live="polite" data-i18n="set.saved"></div>
+    </header>
+
+    <main>
+      <section class="card">
+        <h2 data-i18n="set.general"></h2>
+        <div class="row">
+          <span class="row-text">
+            <strong data-i18n="set.language"></strong>
+            <small data-i18n="set.languageHint"></small>
+          </span>
+          <select id="language" class="select">
+            <option value="auto" data-i18n="set.langAuto"></option>
+            <option value="vi">Tiếng Việt</option>
+            <option value="en">English</option>
+          </select>
+        </div>
+        <label class="row">
+          <span class="row-text">
+            <strong data-i18n="set.delete"></strong>
+            <small data-i18n="set.deleteHint"></small>
+          </span>
+          <input type="checkbox" class="switch" id="delete-original" />
+        </label>
+        <label class="row">
+          <span class="row-text">
+            <strong data-i18n="set.gesture"></strong>
+            <small data-i18n="set.gestureHint"></small>
+          </span>
+          <input type="checkbox" class="switch" id="gesture" />
+        </label>
+        <div class="row">
+          <span class="row-text">
+            <strong data-i18n="set.hotkey"></strong>
+            <small data-i18n="set.hotkeyHint"></small>
+          </span>
+          <kbd id="hotkey"></kbd>
+        </div>
+      </section>
+
+      <section class="card">
+        <div class="card-head">
+          <h2 data-i18n="set.formats"></h2>
+          <button class="link" id="reset" type="button" data-i18n="set.reset"></button>
+        </div>
+        <div class="tabs" role="tablist" id="tabs"></div>
+
+        <div class="formats">
+          <div class="preview">
+            <svg id="mini" viewBox="0 0 200 200" aria-hidden="true"></svg>
+            <p class="count" id="count"></p>
+          </div>
+          <div class="pickers">
+            <h3><span data-i18n="set.onWheel"></span> <span class="muted">· <span data-i18n="set.reorder"></span></span></h3>
+            <ol class="chosen" id="chosen"></ol>
+            <h3><span data-i18n="set.all"></span> <span class="muted">· <span data-i18n="set.toggle"></span></span></h3>
+            <div class="grid" id="grid"></div>
+          </div>
+        </div>
+      </section>
+    </main>
+
+    <footer class="foot">
+      <span>KT Convert <span id="version"></span> · <span data-i18n="set.author"></span></span>
+      <button class="link" id="homepage" type="button">GitHub</button>
+    </footer>
+
+    <script type="module" src="/src/settings.ts"></script>
+  </body>
+</html>

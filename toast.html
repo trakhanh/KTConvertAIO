@@ -1,0 +1,27 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>KT Convert</title>
+    <link rel="stylesheet" href="/src/toast.css" />
+  </head>
+  <body>
+    <div id="card" class="card" data-kind="info">
+      <div class="badge">
+        <svg class="meter" viewBox="0 0 44 44" aria-hidden="true">
+          <circle class="meter-track" cx="22" cy="22" r="19" />
+          <circle class="meter-fill" cx="22" cy="22" r="19" pathLength="100" />
+        </svg>
+        <div class="badge-glyph"></div>
+      </div>
+      <div class="body">
+        <div class="title"></div>
+        <div class="detail"></div>
+        <button class="reveal" type="button"></button>
+      </div>
+      <button class="dismiss" type="button" aria-label="Dismiss"></button>
+    </div>
+    <script type="module" src="/src/toast.ts"></script>
+  </body>
+</html>
