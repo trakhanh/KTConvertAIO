@@ -47,11 +47,14 @@ const demoModel: SettingsModel = {
       defaults: ["jpg", "png", "webp", "avif", "tiff", "bmp", "ico"],
       selected: ["jpg", "png", "webp", "avif", "tiff", "bmp", "ico"],
       all: [
-        ["jpg", "JPG", "photo"], ["png", "PNG", "lossless"], ["webp", "WEBP", "web"], ["avif", "AVIF", "smallest"],
-        ["tiff", "TIFF", "print"], ["bmp", "BMP", "bitmap"], ["ico", "ICO", "icon"], ["gif", "GIF", "still"],
-        ["jxl", "JXL", "JPEG XL"], ["jp2", "JP2", "JPEG 2000"], ["tga", "TGA", "game / 3D"], ["qoi", "QOI", "fast lossless"],
-        ["exr", "EXR", "HDR float"], ["hdr", "HDR", "radiance"], ["ppm", "PPM", "raw pixels"], ["pcx", "PCX", "legacy"],
-      ].map(([id, label, hint]) => ({ id, label, hint, ext: id })),
+        ["jpg", "JPG", "photo", "ảnh chụp"], ["jpeg", "JPEG", "JPG as .jpeg", "JPG đuôi .jpeg"],
+        ["png", "PNG", "lossless", "nguyên bản"], ["webp", "WEBP", "web", "cho web"],
+        ["avif", "AVIF", "smallest", "nhẹ nhất"], ["tiff", "TIFF", "print", "in ấn"], ["bmp", "BMP", "bitmap", "bitmap"],
+        ["ico", "ICO", "icon", "biểu tượng"], ["gif", "GIF", "still", "ảnh tĩnh"], ["jxl", "JXL", "JPEG XL", "JPEG XL"],
+        ["jp2", "JP2", "JPEG 2000", "JPEG 2000"], ["tga", "TGA", "game / 3D", "game / 3D"],
+        ["qoi", "QOI", "fast lossless", "nén nhanh"], ["exr", "EXR", "HDR float", "HDR số thực"],
+        ["hdr", "HDR", "radiance", "radiance"], ["ppm", "PPM", "raw pixels", "điểm ảnh thô"], ["pcx", "PCX", "legacy", "đời cũ"],
+      ].map(([id, label, hint, hintVi]) => ({ id, label, hint, hintVi, ext: id })),
     },
     { key: "animated", defaults: ["mp4", "webm"], selected: ["mp4", "webm"], all: [{ id: "mp4", label: "MP4", hint: "video", ext: "mp4" }, { id: "webm", label: "WEBM", hint: "web video", ext: "webm" }] },
     { key: "video", defaults: ["mp4"], selected: ["mp4"], all: [{ id: "mp4", label: "MP4", hint: "H.264", ext: "mp4" }, { id: "hevc", label: "HEVC", hint: "H.265 · smaller", ext: "mp4" }] },
@@ -287,4 +290,12 @@ if (inTauri) {
   $("version").textContent = "dev";
 }
 initLang(() => render());
+if (!inTauri) {
+  // Browser demo: /settings.html?lang=vi
+  const lang = new URLSearchParams(location.search).get("lang");
+  if (lang) {
+    setLangLocally(lang);
+    demoModel.language = lang;
+  }
+}
 load();

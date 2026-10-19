@@ -1,7 +1,7 @@
 import { invoke } from "@tauri-apps/api/core";
 import { listen } from "@tauri-apps/api/event";
-import { buildGlass, fetchBackdrop, type Backdrop } from "./glass";
-import { initLang, t } from "./i18n";
+import { buildGlass, demoBackdrop, demoWallpaper, fetchBackdrop, type Backdrop } from "./glass";
+import { initLang, setLangLocally, t } from "./i18n";
 import { afterPaint, glyphs } from "./glyphs";
 
 type ToastPayload = {
@@ -117,21 +117,52 @@ async function show(p: ToastPayload) {
   }
   visible = true;
   // The backend captured the desktop behind us just before showing the window.
-  backdrop = await fetchBackdrop("toast_backdrop");
+  backdrop = inTauri ? await fetchBackdrop("toast_backdrop") : demoToastBackdrop();
   glassHeight = 0;
   update(p);
-  await refreshGlass();
+  // Show right away on the plain card colour; the glass replaces it as soon as it is built.
+  card.classList.remove("has-glass");
+  refreshGlass();
   card.classList.remove("out");
   afterPaint(() => {
     if (visible) card.classList.add("in");
   });
 }
 
-listen<ToastPayload>("toast:update", (e) => show(e.payload));
+// ---- Browser demo (npm run dev, then /toast.html?lang=vi) ---------------------------------------
+
+const inTauri = "__TAURI_INTERNALS__" in window;
+let demoPaper: HTMLCanvasElement | null = null;
+
+function demoToastBackdrop(): Backdrop {
+  const dpr = devicePixelRatio;
+  demoPaper ??= demoWallpaper(Math.round(innerWidth * dpr), Math.round(innerHeight * dpr));
+  return demoBackdrop(Math.round(innerWidth * dpr), Math.round(innerHeight * dpr), demoPaper);
+}
+
+if (inTauri) {
+  listen<ToastPayload>("toast:update", (e) => show(e.payload));
+} else {
+  const params = new URLSearchParams(location.search);
+  if (params.get("lang")) setLangLocally(params.get("lang")!);
+  reveal.innerHTML = `${glyphs.folder}<span>${t("toast.reveal")}</span>`;
+  demoPaper = demoWallpaper(Math.round(innerWidth * devicePixelRatio), Math.round(innerHeight * devicePixelRatio));
+  document.body.style.background = `url(${demoPaper.toDataURL()}) 0 0 / 100% 100% no-repeat`;
+  hovering = true; // keep the card on screen
+  card.style.transition = "none"; // show the settled card straight away (also for screenshots)
+  const vi = params.get("lang") === "vi";
+  show({
+    kind: "done",
+    title: vi ? "Đã chuyển sang JPG" : "Converted to JPG",
+    detail: vi ? "anh-du-lich.jpg · file gốc đã vào Thùng rác" : "holiday.jpg · original moved to Recycle Bin",
+    percent: 100,
+    outputs: ["C:\\demo\\holiday.jpg"],
+  });
+}
 
 reveal.addEventListener("click", (e) => {
   e.stopPropagation();
-  if (current?.outputs[0]) invoke("reveal_in_explorer", { path: current.outputs[0] });
+  if (current?.outputs[0] && inTauri) invoke("reveal_in_explorer", { path: current.outputs[0] });
   hide();
 });
 

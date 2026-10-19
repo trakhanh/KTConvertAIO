@@ -27,7 +27,7 @@ body {
 
 /* Browser demo only: the same fake desktop the glass is built from (see demoBackdrop). */
 body.demo {
-  background: #1d4ed8 center / 330px 330px no-repeat;
+  background: #0b1030 0 0 / 100% 100% no-repeat;
 }
 
 .stage {

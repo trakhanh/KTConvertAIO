@@ -2,9 +2,9 @@
 import { listen } from "@tauri-apps/api/event";
 import { getCurrentWebview } from "@tauri-apps/api/webview";
 import { getCurrentWindow } from "@tauri-apps/api/window";
-import { buildGlass, demoBackdrop, fetchBackdrop } from "./glass";
+import { buildGlass, demoBackdrop, demoWallpaper, fetchBackdrop } from "./glass";
 import { afterPaint, escapeHtml, glyphs } from "./glyphs";
-import { hintOf, initLang, t } from "./i18n";
+import { hintOf, initLang, setLangLocally, t } from "./i18n";
 
 type Category = "image" | "animated" | "video" | "audio";
 type TargetOption = { id: string; label: string; hint: string; hintVi?: string };
@@ -121,7 +121,7 @@ function midAngle(i: number, n: number): number {
 // ---- Glass -------------------------------------------------------------------------------------
 
 async function makeGlass(): Promise<string> {
-  const bd = inTauri ? await fetchBackdrop("wheel_backdrop") : demoBackdrop(SIZE * devicePixelRatio, SIZE * devicePixelRatio);
+  const bd = inTauri ? await fetchBackdrop("wheel_backdrop") : demoGlassBackdrop();
   if (!bd) return "";
   return buildGlass(bd, SIZE, { kind: "ring", cx: C, cy: C, rIn: R_IN, rOut: R_OUT, hubR: HUB_R }, {
     blur: 12,
@@ -404,13 +404,13 @@ const demos: WheelInfo[] = [
     files: ["C:\\demo\\IMG_2041.HEIC"],
     skipped: 0,
     options: [
-      { id: "jpg", label: "JPG", hint: "photo" },
-      { id: "png", label: "PNG", hint: "lossless" },
-      { id: "webp", label: "WEBP", hint: "web" },
-      { id: "avif", label: "AVIF", hint: "smallest" },
-      { id: "tiff", label: "TIFF", hint: "print" },
-      { id: "bmp", label: "BMP", hint: "bitmap" },
-      { id: "ico", label: "ICO", hint: "icon" },
+      { id: "jpg", label: "JPG", hint: "photo", hintVi: "ảnh chụp" },
+      { id: "png", label: "PNG", hint: "lossless", hintVi: "nguyên bản" },
+      { id: "webp", label: "WEBP", hint: "web", hintVi: "cho web" },
+      { id: "avif", label: "AVIF", hint: "smallest", hintVi: "nhẹ nhất" },
+      { id: "tiff", label: "TIFF", hint: "print", hintVi: "in ấn" },
+      { id: "bmp", label: "BMP", hint: "bitmap", hintVi: "bitmap" },
+      { id: "ico", label: "ICO", hint: "icon", hintVi: "biểu tượng" },
     ],
   },
   {
@@ -420,20 +420,34 @@ const demos: WheelInfo[] = [
     files: ["a.mkv", "b.mkv", "c.mkv"],
     skipped: 0,
     options: [
-      { id: "mp4", label: "MP4", hint: "H.264" },
-      { id: "mov", label: "MOV", hint: "apple" },
-      { id: "webm", label: "WEBM", hint: "VP9" },
-      { id: "avi", label: "AVI", hint: "legacy" },
-      { id: "gif", label: "GIF", hint: "animated" },
-      { id: "mp3", label: "MP3", hint: "audio only" },
-      { id: "m4a", label: "M4A", hint: "audio only" },
+      { id: "mp4", label: "MP4", hint: "H.264", hintVi: "H.264" },
+      { id: "mov", label: "MOV", hint: "apple", hintVi: "Apple" },
+      { id: "webm", label: "WEBM", hint: "VP9", hintVi: "VP9" },
+      { id: "avi", label: "AVI", hint: "legacy", hintVi: "đời cũ" },
+      { id: "gif", label: "GIF", hint: "animated", hintVi: "ảnh động" },
+      { id: "mp3", label: "MP3", hint: "audio only", hintVi: "chỉ âm thanh" },
+      { id: "m4a", label: "M4A", hint: "audio only", hintVi: "chỉ âm thanh" },
     ],
   },
 ];
-let demoIndex = 0;
+// Browser demo options: ?lang=vi|en, ?wheel=0|1 (which demo), ?hot=N (slice shown as hovered).
+const demoParams = new URLSearchParams(location.search);
+let demoIndex = Number(demoParams.get("wheel") ?? 0);
+let demoPaper: HTMLCanvasElement | null = null;
+
+/** The demo wallpaper behind the centred wheel, as the backend's capture would be. */
+function demoGlassBackdrop() {
+  const dpr = devicePixelRatio;
+  demoPaper ??= demoWallpaper(Math.round(innerWidth * dpr), Math.round(innerHeight * dpr));
+  const x = Math.round(((innerWidth - SIZE) / 2) * dpr);
+  const y = Math.round(((innerHeight - SIZE) / 2) * dpr);
+  return demoBackdrop(Math.round(SIZE * dpr), Math.round(SIZE * dpr), demoPaper, x, y);
+}
 
 function openDemo() {
   open({ mode: "hotkey", info: demos[demoIndex++ % demos.length] });
+  const hotParam = demoParams.get("hot");
+  if (hotParam !== null) setTimeout(() => setHot(Number(hotParam)), 700);
 }
 
 // Language: re-render an open wheel if it changes (rare; the wheel is usually hidden).
@@ -443,13 +457,10 @@ initLang(() => {
 
 if (!inTauri) {
   // Show the same fake desktop behind the page that the glass is built from.
-  const bd = demoBackdrop(SIZE * devicePixelRatio, SIZE * devicePixelRatio);
-  const c = document.createElement("canvas");
-  c.width = bd.width;
-  c.height = bd.height;
-  c.getContext("2d")!.putImageData(new ImageData(new Uint8ClampedArray(bd.pixels), bd.width, bd.height), 0, 0);
+  if (demoParams.get("lang")) setLangLocally(demoParams.get("lang")!);
+  demoPaper = demoWallpaper(Math.round(innerWidth * devicePixelRatio), Math.round(innerHeight * devicePixelRatio));
   document.body.classList.add("demo");
-  document.body.style.backgroundImage = `url(${c.toDataURL()})`;
+  document.body.style.backgroundImage = `url(${demoPaper.toDataURL()})`;
   openDemo();
 } else {
   listen<WheelOpen>("wheel:open", (e) => open(e.payload));
