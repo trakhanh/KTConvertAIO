@@ -1,72 +1,114 @@
-# KT Convert
+<p align="center">
+  <img src="src-tauri/icons/128x128.png" width="96" alt="KT Convert" />
+</p>
 
-Trình chuyển đổi file "zero-click" cho Windows, lấy ý tưởng từ Tangerine (macOS). Chạy nền ở khay hệ thống, xử lý offline 100% bằng FFmpeg.
+<h1 align="center">KT Convert</h1>
 
-**Tác giả:** Khánh Trà · [github.com/trakhanh/KTConvertAIO](https://github.com/trakhanh/KTConvertAIO)
+<p align="center">
+  Đổi định dạng file ngay trong File Explorer — không cần mở app, không cần upload.<br />
+  Chọn file, nhấn <b>Ctrl+Alt+C</b>, bấm định dạng. Xong.
+</p>
+
+<p align="center">
+  <a href="https://github.com/trakhanh/KTConvertAIO/releases/latest/download/KTConvert-0.1.0-Setup.exe"><b>⬇ Tải bộ cài cho Windows (57 MB)</b></a>
+  &nbsp;·&nbsp;
+  <a href="https://github.com/trakhanh/KTConvertAIO/releases">Các phiên bản</a>
+</p>
+
+<p align="center"><b>Tác giả:</b> Khánh Trà</p>
+
+---
+
+KT Convert chạy nền ở khay hệ thống. Khi cần đổi định dạng, một vòng tròn phong cách kính mờ (liquid glass) hiện ngay dưới con trỏ chuột để bạn chọn định dạng đích. Mọi việc xử lý diễn ra **ngay trên máy bạn** bằng FFmpeg: file không bị gửi đi đâu cả. Giao diện có **tiếng Việt** và tiếng Anh.
+
+## Tải và cài đặt
+
+1. Tải [**KTConvert-0.1.0-Setup.exe**](https://github.com/trakhanh/KTConvertAIO/releases/latest/download/KTConvert-0.1.0-Setup.exe).
+2. Mở file vừa tải. Nếu Windows hiện cảnh báo **"Windows protected your PC"** (do app chưa có chữ ký số), bấm **More info → Run anyway**.
+3. Chọn ngôn ngữ, bấm cài. Bộ cài chỉ cài cho tài khoản của bạn, **không cần quyền admin**, và đã kèm sẵn FFmpeg — không phải cài thêm gì.
+4. Sau khi cài, biểu tượng KT Convert nằm ở khay hệ thống (góc phải dưới, có thể ẩn trong mũi tên **^**).
+
+**Yêu cầu:** Windows 10 hoặc 11, 64-bit.
 
 ## Cách dùng
 
-| Cách mở vòng chọn định dạng | Thao tác |
+| Cách | Thao tác |
 | --- | --- |
-| Phím tắt | Chọn file trong File Explorer hoặc trên desktop rồi nhấn **Ctrl+Alt+C**. Chọn định dạng bằng chuột, phím mũi tên + Enter, hoặc phím số 1–9. Esc để huỷ. |
-| Cử chỉ kéo | Đang kéo file, nhấn **Shift**: vòng tròn hiện dưới con trỏ. Thả file lên ô định dạng muốn chuyển; thả vào giữa để huỷ. |
-| Khay hệ thống | Menu "Convert selected files" dùng cửa sổ Explorer gần nhất. |
+| **Phím tắt** | Chọn một hoặc nhiều file trong File Explorer hoặc trên desktop, nhấn **Ctrl+Alt+C**. Bấm vào định dạng muốn đổi (hoặc phím số 1–8, phím mũi tên + Enter). **Esc** để huỷ. |
+| **Kéo file + Shift** | Đang kéo một file, nhấn **Shift**: vòng tròn hiện dưới con trỏ. Thả file lên định dạng muốn đổi; thả vào giữa vòng để huỷ. |
+| **Menu khay** | Bấm biểu tượng KT Convert → *Chuyển đổi file đang chọn*. |
 
-File mới được lưu cạnh file gốc (`anh.png` → `anh.jpg`, trùng tên thì thành `anh (1).jpg`). File gốc giữ nguyên.
+- File mới được lưu **ngay cạnh file gốc**: `anh.png` → `anh.jpg` (trùng tên thì thành `anh (1).jpg`).
+- Mặc định **giữ nguyên file gốc**. Muốn tự xoá file gốc sau khi đổi, bấm nút **Giữ file gốc / Xóa file gốc** ở giữa vòng tròn (hoặc phím **D**). File gốc được chuyển vào **Thùng rác**, lấy lại được.
+- Thẻ thông báo góc phải dưới hiện tiến độ; bấm **Mở thư mục** để tới file vừa tạo.
+
+## Cài đặt
+
+Chuột phải (hoặc bấm) biểu tượng ở khay → **Cài đặt…**:
+
+- **Ngôn ngữ:** Theo Windows / Tiếng Việt / English.
+- **Định dạng trên vòng tròn:** với mỗi loại file (Ảnh, GIF, Video, Âm thanh), chọn tối đa 8 định dạng hay dùng và kéo để sắp xếp thứ tự.
+- Bật/tắt chuyển file gốc vào Thùng rác, và cử chỉ Shift khi kéo file.
 
 ## Định dạng hỗ trợ
 
-Vòng tròn hiện tối đa 8 định dạng cho mỗi loại file. Chọn và sắp xếp chúng trong **Settings…** (menu khay hệ thống); chưa chọn thì dùng bộ mặc định (in đậm).
+In đậm là các định dạng có sẵn trên vòng tròn; các định dạng còn lại bật trong Cài đặt.
 
-- **Ảnh** (jpg, png, webp, heic, avif, bmp, tiff, ico, jxl, exr, …) → **JPG, PNG, WEBP, AVIF, TIFF, BMP, ICO**, GIF, JXL, JP2, TGA, QOI, EXR, HDR, PPM, PCX
-- **GIF** → **MP4, WEBM, MOV, WEBP động, PNG/JPG (khung đầu)**, MKV, APNG
-- **Video** (mp4, mov, mkv, webm, avi, wmv, …) → **MP4, MOV, MKV, WEBM, AVI, GIF, MP3, M4A**, HEVC (H.265, .mp4), WMV, FLV, TS, MPG, OGV, ProRes (.mov), WAV, FLAC, OPUS
-- **Âm thanh** (mp3, m4a, wav, flac, ogg, opus, aiff, wma, …) → **MP3, M4A, WAV, FLAC, OGG, OPUS, AIFF, WMA**, AAC, AC3, ALAC (.m4a), M4R (nhạc chuông iPhone), MKA
+| Loại file | Đổi sang |
+| --- | --- |
+| **Ảnh** (jpg, png, webp, heic, avif, bmp, tiff, ico, jxl, exr, psd…) | **JPG, PNG, WEBP, AVIF, TIFF, BMP, ICO**, JPEG, GIF, JXL, JP2, TGA, QOI, EXR, HDR, PPM, PCX |
+| **GIF** | **MP4, WEBM, MOV, WEBP động, PNG, JPG** (khung đầu), MKV, APNG |
+| **Video** (mp4, mov, mkv, webm, avi, wmv, flv, ts…) | **MP4, MOV, MKV, WEBM, AVI, GIF, MP3, M4A**, HEVC/H.265, WMV, FLV, TS, MPG, OGV, ProRes, WAV, FLAC, OPUS |
+| **Âm thanh** (mp3, m4a, wav, flac, ogg, opus, aiff, wma…) | **MP3, M4A, WAV, FLAC, OGG, OPUS, AIFF, WMA**, AAC, AC3, ALAC, M4R (nhạc chuông iPhone), MKA |
 
-Tuỳ chọn trong Settings: chuyển file gốc vào Thùng rác sau khi chuyển đổi (cũng bật/tắt bằng nút giữa vòng tròn hoặc phím D), và bật/tắt cử chỉ Shift khi kéo.
+## Gỡ cài đặt
 
-## Phát triển
+**Settings → Apps → Installed apps → KT Convert → Uninstall**. Để thoát app mà không gỡ: chuột phải biểu tượng khay → *Thoát KT Convert*.
 
-Cần: Rust (MSVC), Node 20+, VC++ Build Tools + Windows SDK, và `ffmpeg.exe`/`ffprobe.exe` trên PATH (hoặc đặt trong thư mục `bin\` cạnh file exe).
+## Câu hỏi thường gặp
+
+- **Nhấn Ctrl+Alt+C không thấy gì?** Hãy chọn file trong File Explorer hoặc trên desktop trước. Nếu app khác đã chiếm phím tắt này, KT Convert sẽ báo ngay khi khởi động.
+- **Có gửi file lên mạng không?** Không. Mọi chuyển đổi chạy offline trên máy bằng FFmpeg đi kèm.
+- **Vì sao Windows cảnh báo khi cài?** App chưa được ký số (code signing). Bộ cài chỉ chứa KT Convert và FFmpeg; mã nguồn có đầy đủ trong repo này.
+
+---
+
+## Dành cho lập trình viên
+
+Viết bằng [Tauri 2](https://tauri.app) (Rust) + TypeScript, không dùng framework giao diện.
+
+**Cần:** Rust (MSVC), Node 20+, Visual Studio Build Tools (C++) + Windows SDK, và `ffmpeg.exe` trên PATH.
 
 ```bash
 npm install
 npm run tauri dev
 ```
 
-Xem riêng giao diện vòng tròn trên trình duyệt (chế độ demo, không cần Rust):
+Xem riêng giao diện trên trình duyệt (chế độ demo, không cần Rust): `npm run dev` rồi mở `http://localhost:1420/wheel.html` hoặc `/settings.html`.
+
+Test chuyển đổi mọi định dạng trên file mẫu trong `samples/`:
 
 ```bash
-npm run dev
+cd src-tauri
+cargo test --lib -- --nocapture
 ```
 
-rồi mở `http://localhost:1420/wheel.html`.
+**Build bộ cài:** đặt `ffmpeg.exe` vào `src-tauri/ffmpeg/` (không đưa lên git vì ~217 MB), rồi chạy `npm run tauri build`. Kết quả ở `src-tauri/target/release/bundle/nsis/`. Đặt biến môi trường `KTC_DEBUG=1` để in log của bộ phát hiện cử chỉ kéo.
 
-Đặt biến môi trường `KTC_DEBUG=1` để in log của bộ phát hiện cử chỉ kéo.
+### Cấu trúc
 
-## Cấu trúc
+| File | Vai trò |
+| --- | --- |
+| `src-tauri/src/lib.rs` | Khởi động, khay hệ thống, phím tắt, lệnh cho giao diện |
+| `src-tauri/src/explorer.rs` | Đọc file đang chọn trong Explorer/desktop qua Shell COM (hỗ trợ tab Windows 11) |
+| `src-tauri/src/dragwatch.rs` | Phát hiện "Shift khi đang kéo file" |
+| `src-tauri/src/formats.rs` | Danh mục định dạng, tham số FFmpeg |
+| `src-tauri/src/convert.rs` | Hàng đợi chuyển đổi, gọi FFmpeg, tiến độ |
+| `src-tauri/src/backdrop.rs` | Chụp nền phía sau cửa sổ cho hiệu ứng kính |
+| `src-tauri/src/i18n.rs`, `src/i18n.ts` | Chuỗi tiếng Việt / tiếng Anh |
+| `src/wheel.*`, `src/toast.*`, `src/settings.*` | Vòng tròn, thẻ thông báo, cửa sổ Cài đặt |
+| `src/glass-core.ts`, `src/glass.worker.ts` | Dựng lớp kính trong Web Worker |
 
-- `src-tauri/src/lib.rs`: khởi động, khay hệ thống, phím tắt, các lệnh gọi từ giao diện
-- `src-tauri/src/explorer.rs`: đọc file đang chọn trong Explorer/desktop qua Shell COM (có hỗ trợ tab Windows 11)
-- `src-tauri/src/dragwatch.rs`: phát hiện "Shift khi đang kéo file"
-- `src-tauri/src/formats.rs`: phân loại file, danh sách định dạng đích, tham số FFmpeg
-- `src-tauri/src/convert.rs`: hàng đợi chuyển đổi, gọi FFmpeg, báo tiến độ
-- `src-tauri/src/toast.rs`: thẻ thông báo góc phải dưới
-- `src/wheel.ts`, `src/wheel.css`: vòng tròn chọn định dạng
-- `src/toast.ts`, `src/toast.css`: thẻ thông báo
+### Giấy phép bên thứ ba
 
-## Ngôn ngữ
-
-Giao diện có tiếng Việt và tiếng Anh: Settings → Ngôn ngữ (mặc định theo ngôn ngữ hiển thị của Windows). Chuỗi phía Rust nằm trong `src-tauri/src/i18n.rs`, phía giao diện trong `src/i18n.ts`; gợi ý của từng định dạng có bản tiếng Việt trong `formats.rs` (`hint_vi`).
-
-## Bộ cài
-
-```bash
-npm run tauri build
-```
-
-Ra file `src-tauri/target/release/bundle/nsis/KT Convert_<version>_x64-setup.exe` (~57 MB). Trình cài đặt có tiếng Việt và tiếng Anh, cài cho tài khoản hiện tại (không cần quyền admin), kèm sẵn `bin/ffmpeg.exe`. Trước khi build, đặt `ffmpeg.exe` vào `src-tauri/ffmpeg/` (thư mục này không đưa lên git vì file ~217 MB). App không cần `ffprobe`: thông tin file được đọc từ `ffmpeg -i`.
-
-## Ghi chú phát hành
-
-Bản FFmpeg "full build" là giấy phép GPL v3 (bộ cài kèm `FFMPEG-LICENSE.txt`). Khi phát hành thương mại nên dùng bản FFmpeg LGPL tự build (vẫn có libwebp, libvpx, libopus, libaom, libmp3lame, nhưng không có libx264; khi đó dùng `h264_mf` của Windows để mã hoá H.264).
+Bộ cài kèm FFmpeg (bản full build của [gyan.dev](https://www.gyan.dev/ffmpeg/builds/)), giấy phép **GPL v3** — xem `src-tauri/ffmpeg/FFMPEG-LICENSE.txt`. Mã nguồn FFmpeg: <https://ffmpeg.org/download.html>.
