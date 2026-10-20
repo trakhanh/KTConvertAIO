@@ -179,6 +179,25 @@ pub fn recycle(path: &std::path::Path) -> Result<(), String> {
     }
 }
 
+/// Tells Explorer and the desktop that `path` was just created.
+///
+/// They normally notice new files on their own, but a Recycle Bin move in the same folder right
+/// after (delete original) makes the shell drop that change, and the file stays hidden until F5.
+pub fn notify_created(path: &std::path::Path) {
+    use std::os::windows::ffi::OsStrExt;
+    use windows::Win32::UI::Shell::{SHChangeNotify, SHCNE_CREATE, SHCNE_UPDATEDIR, SHCNF_FLUSH, SHCNF_PATHW};
+
+    let wide = |p: &std::path::Path| -> Vec<u16> { p.as_os_str().encode_wide().chain([0]).collect() };
+    let file = wide(path);
+    unsafe {
+        SHChangeNotify(SHCNE_CREATE, SHCNF_PATHW | SHCNF_FLUSH, Some(file.as_ptr() as _), None);
+        if let Some(dir) = path.parent() {
+            let dir = wide(dir);
+            SHChangeNotify(SHCNE_UPDATEDIR, SHCNF_PATHW | SHCNF_FLUSH, Some(dir.as_ptr() as _), None);
+        }
+    }
+}
+
 /// Value name under HKCU\...\Run; the uninstaller removes the same name (windows/hooks.nsh).
 const RUN_VALUE: windows::core::PCWSTR = windows::core::w!("KT Convert");
 const RUN_KEY: windows::core::PCWSTR = windows::core::w!("Software\\Microsoft\\Windows\\CurrentVersion\\Run");

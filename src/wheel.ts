@@ -16,7 +16,7 @@ type WheelInfo = {
   skipped: number;
   options: TargetOption[];
 };
-type WheelOpen = { mode: "hotkey" | "drag"; info: WheelInfo | null; deleteOriginal?: boolean };
+type WheelOpen = { mode: "hotkey" | "drag"; info: WheelInfo | null; deleteOriginal?: boolean; lang?: string };
 
 // Geometry in CSS pixels; the window is 330x330 logical pixels (keep in sync with wheel.css
 // and WHEEL_SIZE in lib.rs).
@@ -326,6 +326,7 @@ async function open(payload: WheelOpen) {
   mode = payload.mode;
   info = payload.info;
   deleteOriginal = !!payload.deleteOriginal;
+  if (payload.lang) setLangLocally(payload.lang);
   stage.classList.toggle("drag", mode === "drag");
   stage.classList.toggle("instant", reducedMotion);
 

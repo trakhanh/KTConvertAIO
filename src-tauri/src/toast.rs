@@ -6,7 +6,7 @@ use serde::Serialize;
 use tauri::{AppHandle, Emitter, Manager, PhysicalPosition, PhysicalSize};
 
 const WIDTH: f64 = 400.0;
-const HEIGHT: f64 = 120.0;
+const HEIGHT: f64 = 156.0;
 
 #[derive(Clone, Serialize)]
 #[serde(rename_all = "camelCase")]
@@ -16,11 +16,23 @@ pub struct ToastPayload {
     pub detail: String,
     pub percent: Option<f64>,
     pub outputs: Vec<String>,
+    /// A secondary line, e.g. that the originals went to the Recycle Bin.
+    pub note: String,
+    /// The backend's language, so the page's own labels match the text above.
+    pub lang: &'static str,
 }
 
 impl ToastPayload {
     fn new(kind: &'static str, title: &str, detail: &str) -> Self {
-        Self { kind, title: title.into(), detail: detail.into(), percent: None, outputs: Vec::new() }
+        Self {
+            kind,
+            title: title.into(),
+            detail: detail.into(),
+            percent: None,
+            outputs: Vec::new(),
+            note: String::new(),
+            lang: crate::i18n::current().code(),
+        }
     }
     pub fn info(title: &str, detail: &str) -> Self {
         Self::new("info", title, detail)
@@ -33,6 +45,9 @@ impl ToastPayload {
     }
     pub fn done(title: &str, detail: &str, outputs: Vec<String>) -> Self {
         Self { percent: Some(100.0), outputs, ..Self::new("done", title, detail) }
+    }
+    pub fn with_note(self, note: &str) -> Self {
+        Self { note: note.into(), ..self }
     }
 }
 

@@ -1,6 +1,6 @@
 [package]
 name = "ktconvert"
-version = "0.1.2"
+version = "0.1.3"
 description = "Zero-click file converter for Windows"
 authors = ["Khánh Trà"]
 repository = "https://github.com/trakhanh/KTConvertAIO"

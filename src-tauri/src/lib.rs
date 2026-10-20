@@ -37,12 +37,14 @@ struct WheelOpen {
     info: Option<WheelInfo>,
     /// Whether originals go to the Recycle Bin after converting (shown and toggled in the hub).
     delete_original: bool,
+    /// The backend's language: the page may have asked before the settings were loaded.
+    lang: &'static str,
 }
 
 impl WheelOpen {
     fn new(app: &AppHandle, mode: &'static str, info: Option<WheelInfo>) -> Self {
         let delete_original = app.state::<SettingsState>().get().delete_original;
-        Self { mode, info, delete_original }
+        Self { mode, info, delete_original, lang: i18n::current().code() }
     }
 }
 
@@ -378,6 +380,12 @@ fn open_homepage() {
     let _ = std::process::Command::new("explorer.exe").arg(HOMEPAGE).spawn();
 }
 
+/// Opens a converted file with its default app.
+#[tauri::command]
+fn open_file(path: String) {
+    let _ = std::process::Command::new("explorer.exe").arg(path).spawn();
+}
+
 #[tauri::command]
 fn reveal_in_explorer(path: String) {
     let _ = std::process::Command::new("explorer.exe").raw_arg(format!("/select,\"{path}\"")).spawn();
@@ -461,6 +469,7 @@ pub fn run() {
             hide_wheel,
             hide_toast,
             reveal_in_explorer,
+            open_file,
             open_homepage,
             set_autostart,
             set_delete_original,

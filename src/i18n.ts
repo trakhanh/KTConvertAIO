@@ -18,6 +18,7 @@ const STRINGS = {
   "wheel.to": ["convert to", "chuyển sang"],
 
   // Toast
+  "toast.open": ["Open", "Mở file"],
   "toast.reveal": ["Show in folder", "Mở thư mục"],
   "toast.dismiss": ["Dismiss", "Đóng"],
 

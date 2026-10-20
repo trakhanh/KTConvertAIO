@@ -10,6 +10,8 @@ type ToastPayload = {
   detail: string;
   percent: number | null;
   outputs: string[];
+  note?: string;
+  lang?: string;
 };
 
 const AUTO_HIDE_MS: Record<ToastPayload["kind"], number> = { info: 5000, done: 5500, error: 9000, progress: 0 };
@@ -17,17 +19,49 @@ const AUTO_HIDE_MS: Record<ToastPayload["kind"], number> = { info: 5000, done: 5
 const card = document.getElementById("card")!;
 const title = card.querySelector<HTMLElement>(".title")!;
 const detail = card.querySelector<HTMLElement>(".detail")!;
+const pct = card.querySelector<HTMLElement>(".pct")!;
+const note = card.querySelector<HTMLElement>(".note")!;
+const noteText = card.querySelector<HTMLElement>(".note-text")!;
+const actions = card.querySelector<HTMLElement>(".actions")!;
+const openBtn = card.querySelector<HTMLButtonElement>(".open")!;
 const reveal = card.querySelector<HTMLButtonElement>(".reveal")!;
 const dismiss = card.querySelector<HTMLButtonElement>(".dismiss")!;
 const badgeGlyph = card.querySelector<HTMLElement>(".badge-glyph")!;
 const meter = card.querySelector<SVGCircleElement>(".meter-fill")!;
 
 dismiss.innerHTML = glyphs.close;
-initLang(() => {
+card.querySelector(".note-icon")!.innerHTML = glyphs.trash;
+
+function renderLabels() {
+  openBtn.innerHTML = `${glyphs.file}<span>${t("toast.open")}</span>`;
   reveal.innerHTML = `${glyphs.folder}<span>${t("toast.reveal")}</span>`;
   dismiss.setAttribute("aria-label", t("toast.dismiss"));
   dismiss.title = t("toast.dismiss");
-});
+}
+initLang(renderLabels);
+
+// ---- File names: cut in the middle so the new extension stays visible ---------------------------
+
+const measure = document.createElement("canvas").getContext("2d")!;
+
+function fitMiddle(el: HTMLElement, text: string) {
+  el.textContent = text;
+  const max = el.clientWidth;
+  measure.font = getComputedStyle(el).font;
+  const fits = (s: string) => measure.measureText(s).width <= max;
+  if (!max || fits(text)) return;
+  // Keep the extension plus a few characters before it, then as much of the start as fits.
+  const dot = text.lastIndexOf(".");
+  const tail = text.slice(dot > 0 ? Math.max(0, dot - 6) : -8);
+  let lo = 0;
+  let hi = text.length - tail.length;
+  while (lo < hi) {
+    const mid = (lo + hi + 1) >> 1;
+    if (fits(text.slice(0, mid).trimEnd() + "…" + tail)) lo = mid;
+    else hi = mid - 1;
+  }
+  if (lo > 0) el.textContent = text.slice(0, lo).trimEnd() + "…" + tail;
+}
 
 let current: ToastPayload | null = null;
 let visible = false;
@@ -39,15 +73,17 @@ let hovering = false;
 const CARD_RADIUS = 18;
 let backdrop: Backdrop | null = null;
 let glassUrl = "";
-let glassHeight = 0;
+let glassKey = "";
 let glassJob = 0;
 
 /** Rebuilds the card's glass for its current size (the card grows when a button appears). */
 async function refreshGlass() {
   if (!backdrop) return;
   const height = card.offsetHeight;
-  if (height === glassHeight && glassUrl) return;
-  glassHeight = height;
+  // Rebuild when the card or the window changes size.
+  const key = `${innerWidth}x${innerHeight}:${height}`;
+  if (key === glassKey && glassUrl) return;
+  glassKey = key;
   const job = ++glassJob;
   const left = card.offsetLeft;
   const top = card.offsetTop;
@@ -94,11 +130,23 @@ async function hide() {
 function update(p: ToastPayload) {
   const kindChanged = current?.kind !== p.kind;
   current = p;
+  if (p.lang) {
+    setLangLocally(p.lang);
+    renderLabels();
+  }
   card.dataset.kind = p.kind;
   title.textContent = p.title;
-  detail.textContent = p.detail;
+  pct.textContent = p.kind === "progress" && p.percent != null ? `${Math.round(p.percent)}%` : "";
+  // One line for a file name or a count; error lists may wrap.
+  const single = p.kind !== "error" && !p.detail.includes("\n");
+  detail.classList.toggle("single", single);
+  if (single) fitMiddle(detail, p.detail);
+  else detail.textContent = p.detail;
   detail.title = p.detail;
-  reveal.hidden = p.outputs.length === 0;
+  note.hidden = !p.note;
+  noteText.textContent = p.note ?? "";
+  actions.hidden = p.outputs.length === 0;
+  openBtn.hidden = p.outputs.length !== 1;
   if (kindChanged) {
     badgeGlyph.innerHTML = glyphFor(p.kind);
     badgeGlyph.classList.remove("pop");
@@ -118,7 +166,7 @@ async function show(p: ToastPayload) {
   visible = true;
   // The backend captured the desktop behind us just before showing the window.
   backdrop = inTauri ? await fetchBackdrop("toast_backdrop") : demoToastBackdrop();
-  glassHeight = 0;
+  glassKey = "";
   update(p);
   // Show right away on the plain card colour; the glass replaces it as soon as it is built.
   card.classList.remove("has-glass");
@@ -145,20 +193,46 @@ if (inTauri) {
 } else {
   const params = new URLSearchParams(location.search);
   if (params.get("lang")) setLangLocally(params.get("lang")!);
-  reveal.innerHTML = `${glyphs.folder}<span>${t("toast.reveal")}</span>`;
-  demoPaper = demoWallpaper(Math.round(innerWidth * devicePixelRatio), Math.round(innerHeight * devicePixelRatio));
-  document.body.style.background = `url(${demoPaper.toDataURL()}) 0 0 / 100% 100% no-repeat`;
+  renderLabels();
   hovering = true; // keep the card on screen
   card.style.transition = "none"; // show the settled card straight away (also for screenshots)
   const vi = params.get("lang") === "vi";
-  show({
-    kind: "done",
-    title: vi ? "Đã chuyển sang JPG" : "Converted to JPG",
-    detail: vi ? "anh-du-lich.jpg · file gốc đã vào Thùng rác" : "holiday.jpg · original moved to Recycle Bin",
-    percent: 100,
-    outputs: ["C:\\demo\\holiday.jpg"],
+  const sample: ToastPayload =
+    params.get("demo") === "progress"
+      ? {
+          kind: "progress",
+          title: vi ? "Đang chuyển sang MP4 · 2/3" : "Converting to MP4 · 2/3",
+          detail: "Screen Recording 2026-10-18 at 21.44.10.mov",
+          percent: 58,
+          outputs: [],
+        }
+      : {
+          kind: "done",
+          title: vi ? "Đã chuyển sang PNG" : "Converted to PNG",
+          detail: "WhatsApp Image 2026-07-16 at 11.07.02.png",
+          percent: 100,
+          outputs: ["C:\\demo\\photo.png"],
+          note: vi ? "File gốc đã vào Thùng rác" : "Original moved to Recycle Bin",
+        };
+  const paint = () => {
+    demoPaper = demoWallpaper(Math.round(innerWidth * devicePixelRatio), Math.round(innerHeight * devicePixelRatio));
+    document.body.style.background = `url(${demoPaper.toDataURL()}) 0 0 / 100% 100% no-repeat`;
+    backdrop = demoToastBackdrop();
+  };
+  paint();
+  show(sample);
+  // Headless browsers grow the viewport after load: redraw the fake desktop and its glass.
+  window.addEventListener("resize", () => {
+    paint();
+    refreshGlass();
   });
 }
+
+openBtn.addEventListener("click", (e) => {
+  e.stopPropagation();
+  if (current?.outputs[0] && inTauri) invoke("open_file", { path: current.outputs[0] });
+  hide();
+});
 
 reveal.addEventListener("click", (e) => {
   e.stopPropagation();

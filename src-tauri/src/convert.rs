@@ -302,23 +302,26 @@ fn run_job(app: &AppHandle, job: Job) {
                         Err(e) => errors.push(format!("{name}: {e}")),
                     }
                 }
+                winutil::notify_created(&out);
             }
             Err(e) => errors.push(format!("{name}: {e}")),
         }
     }
 
+    let note = match recycled {
+        0 => String::new(),
+        1 => t("recycled.one").to_string(),
+        n => tf("recycled.many", &[("n", &n.to_string())]),
+    };
     let payload = if errors.is_empty() {
-        let mut detail = if outputs.len() == 1 {
+        let detail = if outputs.len() == 1 {
             outputs[0].rsplit('\\').next().unwrap_or_default().to_string()
         } else if recycled > 0 {
             tf("files.converted", &[("n", &outputs.len().to_string())])
         } else {
             tf("files.saved", &[("n", &outputs.len().to_string())])
         };
-        if recycled > 0 {
-            detail.push_str(t(if recycled == 1 { "recycled.one" } else { "recycled.many" }));
-        }
-        ToastPayload::done(&tf("converted", &[("label", &label)]), &detail, outputs)
+        ToastPayload::done(&tf("converted", &[("label", &label)]), &detail, outputs).with_note(&note)
     } else if outputs.is_empty() {
         ToastPayload::error(t("failed"), &errors.join("\n"))
     } else {
@@ -327,6 +330,7 @@ fn run_job(app: &AppHandle, job: Job) {
             &errors.join("\n"),
             outputs,
         )
+        .with_note(&note)
     };
     toast::show(app, payload);
 }

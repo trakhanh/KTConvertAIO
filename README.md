@@ -9,7 +9,7 @@ Chọn file → <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>C</kbd> → bấm địn
 
 [![Phiên bản](https://img.shields.io/github/v/release/trakhanh/KTConvertAIO?label=phi%C3%AAn%20b%E1%BA%A3n&color=8b5cff)](https://github.com/trakhanh/KTConvertAIO/releases/latest) [![Lượt tải](https://img.shields.io/github/downloads/trakhanh/KTConvertAIO/total?label=l%C6%B0%E1%BB%A3t%20t%E1%BA%A3i&color=22c3ff)](https://github.com/trakhanh/KTConvertAIO/releases) ![Windows 10 | 11](https://img.shields.io/badge/Windows-10%20%7C%2011-0078D4?logo=windows&logoColor=white) ![Offline 100%](https://img.shields.io/badge/offline-100%25-10b981) ![Tiếng Việt](https://img.shields.io/badge/giao%20di%E1%BB%87n-Ti%E1%BA%BFng%20Vi%E1%BB%87t-ef4444)
 
-<a href="https://github.com/trakhanh/KTConvertAIO/releases/latest/download/KTConvert-0.1.2-Setup.exe">
+<a href="https://github.com/trakhanh/KTConvertAIO/releases/latest/download/KTConvert-0.1.3-Setup.exe">
   <img src="docs/download-button.svg" width="380" alt="Tải KT Convert cho Windows" />
 </a>
 
@@ -77,7 +77,7 @@ Chọn file → <kbd>Ctrl</kbd> + <kbd>Alt</kbd> + <kbd>C</kbd> → bấm địn
 
 ## 📥 Cài đặt
 
-1. Bấm nút **Tải KT Convert** ở trên (hoặc vào [Releases](https://github.com/trakhanh/KTConvertAIO/releases/latest)) để tải `KTConvert-0.1.2-Setup.exe`.
+1. Bấm nút **Tải KT Convert** ở trên (hoặc vào [Releases](https://github.com/trakhanh/KTConvertAIO/releases/latest)) để tải `KTConvert-0.1.3-Setup.exe`.
 2. Mở file vừa tải, chọn ngôn ngữ và bấm cài. **Không cần quyền admin**, FFmpeg đã có sẵn trong bộ cài.
 3. Xong! Biểu tượng KT Convert nằm ở khay hệ thống (góc phải dưới, có thể ẩn trong mũi tên **^**) và sẽ tự chạy mỗi khi bật máy.
 

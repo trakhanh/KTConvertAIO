@@ -108,8 +108,8 @@ pub fn t(key: &str) -> &'static str {
         "failed" => ("Conversion failed", "Chuyển đổi thất bại"),
         "files.converted" => ("{n} files converted", "Đã chuyển {n} file"),
         "files.saved" => ("{n} files saved next to the originals", "{n} file đã lưu cạnh file gốc"),
-        "recycled.one" => (" · original moved to Recycle Bin", " · file gốc đã vào Thùng rác"),
-        "recycled.many" => (" · originals moved to Recycle Bin", " · các file gốc đã vào Thùng rác"),
+        "recycled.one" => ("Original moved to Recycle Bin", "File gốc đã vào Thùng rác"),
+        "recycled.many" => ("{n} originals moved to Recycle Bin", "{n} file gốc đã vào Thùng rác"),
         "files.count" => ("{n} files", "{n} file"),
 
         // Errors
